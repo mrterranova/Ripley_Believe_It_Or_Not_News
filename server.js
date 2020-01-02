@@ -31,14 +31,13 @@ app.engine("handlebars", exphbs({
 
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/populate", { useNewUrlParser: true, useUnifiedTopology : true });
+mongoose.connect("mongodb://localhost/weirdnews", { useNewUrlParser: true, useUnifiedTopology : true });
 
 //Route for scraping
 app.get("/scrape", function (req, res){
 
     axios.get("https://www.ripleys.com/weird-news/").then(function (response) {
         var $ = cheerio.load(response.data)
-
         var results = [];
 
         $(".post-box-inner").each(function (i, element) {
@@ -54,7 +53,7 @@ app.get("/scrape", function (req, res){
                 });
             }
         });
-    
+        console.log(results)
             db.Article.create(results)
                 .then(function(dbArticle) {
                     res.send(dbArticle)
@@ -85,13 +84,9 @@ app.get("/articles/:id", function(req, res) {
 });
 
 app.post("/articles/:id", function(req, res) {
-    console.log("You are posting a note")
-    console.log(req.body)
-    console.log(req.params)
     db.Note.create(req.body)
     .then(function(dbNote) {
-        console.log(dbNote)
-        return db.Article.findOneAndUpdate({_id : req.params.id}, { note : dbNote._id })
+        return db.Article.findOneAndUpdate({_id : req.params.id}, { note : dbNote._id }, { new: true})
     }).then(function(dbArticle) {
         res.send(dbArticle)
     }).catch(function(err){

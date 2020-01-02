@@ -1,0 +1,152 @@
+{{!-- <link rel="stylesheet" href="../public/css/style.css"> --}}
+<style>
+    @font-face   {font-family: strange; src: url(images/strange.ttf)};
+    body {
+        background: cover;
+        background-image: url("");
+    }
+    h1 {
+        font-family: strange;
+        color:goldenrod;
+                text-shadow:
+            -2px -2px 0 #000,
+            2px -2px 0 #000,
+            -2px 2px 0 #000,
+            2px 2px 0 #000;
+            font-size: 68px;
+    }
+    h2 {
+        font-family: strange;
+        color:goldenrod;
+                text-shadow:
+            -2px -2px 0 #000,
+            2px -2px 0 #000,
+            -2px 2px 0 #000,
+            2px 2px 0 #000;
+
+    }
+
+    #colors {
+        z-index: -1;
+        position: absolute;
+        margin-left: -170px;
+        width: 100vw;
+    }
+
+    .storyBox {
+        margin-top: 50px;
+        width: 50%;
+        height: 610px;
+        overflow: auto;
+        float: left;
+        text-align: center;
+        background-color: rgba(255, 244, 236, 0.5);
+    }
+    .articleTitle:hover {
+        cursor: pointer;
+    }
+
+    .articleSummary {
+        margin-left: 50px;
+    }
+
+    .notes {
+        margin-top: 20px;
+        width: 50%;
+        float: right;
+        padding: 10px 70px 70px 70px;
+    }
+
+    #theNotes {
+        width: 100%;
+    }
+
+    .thisArticleTitle {
+        text-align: center;
+        color: goldenrod;
+        text-shadow:
+            -2px -2px 0 #000,
+            2px -2px 0 #000,
+            -2px 2px 0 #000,
+            2px 2px 0 #000;
+    }
+
+    .seePrevious {
+        background-color: rgba(255, 244, 236, 0.5);
+        width: 100%;
+        height: 300px;
+        overflow: auto;
+    }
+
+    #noteBody {
+        width: 100%;
+    }
+    .seePrevious {
+        padding: 5px 20px 0px 20px;
+    }
+</style>
+<div class="container">
+    <img id="colors" src="images/bubbles.jpg" alt="">
+    <h1 style="text-align: center;">RIPLELY'S...BELIVE IT OR NOT NEWS!</h1>
+    <div class="storyBox">
+        {{#each article}}
+        <br>
+        <h3 class="articleTitle" data-id='{{this.id}}' data-title='{{this.title}}'>{{this.title}}</h3>
+        <p class="articleSummary">{{this.summary}}</p> 
+        <a href="{{this.url}}" target="_blank"><button class="btn btn-warning">Visit Article</button></a>
+        {{/each}}
+    </div>
+    <div class="notes">
+        <h3 class="thisArticleTitle"></h3>
+        <form>
+            <input id="noteTitle" type="text" style="width:100%; margin-bottom:10px;" placeholder="Comment Title"
+                id="titleInput">
+            <textarea id="noteBody" name="{{this.id}}" cols="30" rows="10" placeholder="Type your comment here..."
+                id="bodyInput"></textarea>
+            <input id="btnSubmit" type="submit" class="btn btn-warning" style="width:100%;">
+        </form>
+        <div class="seePrevious">
+            Previous comment... <span id="prevTitle"></span><br><br><span id="prevNote"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    var thisId;
+    $(document).on("click", ".articleTitle", function () {
+        var thisId = $(this).attr("data-id");
+        var thisTitle = $(this).attr("data-title")
+        var titleInput = $("#titleInput").val();
+        var bodyInput = $("#bodyInput").val();
+        $.ajax({
+            method: "GET",
+            url: "/articles/" + thisId
+        }).then(function (data) {
+            console.log(data)
+            $(".thisArticleTitle").html(data.title)
+            $("#prevTitle").html(data.note.title)
+            $("#prevNote").html(data.note.body)
+        });
+
+        $("#btnSubmit").on("click", function () {
+            bod = $("#noteBody").val();
+            ti = $("#noteTitle").val();
+
+            $.ajax({
+                method: "POST",
+                url: "/articles/" + thisId,
+                data: {
+                    // Value taken from title input
+                    title: $("#noteTitle").val(),
+                    // Value taken from note textarea
+                    body: $("#noteBody").val()
+                }
+            }).then(function (data) {
+                // Empty the notes section
+            });
+        });
+    });
+    // Also, remove the values entered in the input and textarea for note entry
+    $(".articleTitle").val("");
+    $(".articleBody").val("");
+</script>

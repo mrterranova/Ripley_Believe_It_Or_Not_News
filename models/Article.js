@@ -15,10 +15,10 @@ let ArticleSchema = new Schema ({
         type: String, 
         required: true
     },
-    note: {
+    notes: [{
         type: Schema.Types.ObjectId, 
         ref: "Note"
-    }
+    }]
 });
 
 //create model from above schema

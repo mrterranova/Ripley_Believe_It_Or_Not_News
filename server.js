@@ -19,11 +19,11 @@ let app = express();
 //middleware configurations
 app.use(logger("dev"));
 
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(express.static("public"));
-app.use(express.static('views/images'));
+// app.use(express.static('views/images'));
 
 app.engine("handlebars", exphbs({
     defaultLayout: "main"
@@ -31,10 +31,11 @@ app.engine("handlebars", exphbs({
 
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/weirdnews", { useNewUrlParser: true, useUnifiedTopology : true });
+mongoose.connect("mongodb://localhost/weirdnews", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('useFindAndModify', false);
 
 //Route for scraping
-app.get("/scrape", function (req, res){
+app.get("/scrape", function (req, res) {
 
     axios.get("https://www.ripleys.com/weird-news/").then(function (response) {
         var $ = cheerio.load(response.data)
@@ -44,7 +45,7 @@ app.get("/scrape", function (req, res){
             var title = $(element).children("h3.title").text();
             var summary = $(element).children(".post-excerpt").children("p").text();
             var link = $(element).children("h3.title").children().attr("href");
-            if (title == "" || summary == "" || link == "") {}
+            if (title == "" || summary == "" || link == "") { }
             else {
                 results.push({
                     title: title,
@@ -54,50 +55,80 @@ app.get("/scrape", function (req, res){
             }
         });
         console.log(results)
-            db.Article.create(results)
-                .then(function(dbArticle) {
-                    res.send(dbArticle)
-                }).catch(function(err) {
-                    console.log(err)
-                });
+        db.Article.create(results)
+            .then(function (dbArticle) {
+                res.send(dbArticle)
+            }).catch(function (err) {
+                console.log(err)
             });
-            res.send("Scrape Completed");
-        });
+    });
+    res.send("Scrape Completed");
+});
 
-app.get("/articles", function(req, res){
+app.get("/articles", function (req, res) {
     db.Article.find({})
-    .then(function(dbArticle){
-        res.render("index", {article: dbArticle});
-    }). catch( function(err) {
-        res.send(err)
-    })
+        .then(function (dbArticle) {
+            res.render("index", { article: dbArticle });
+        }).catch(function (err) {
+            res.send(err)
+        })
 });
 
-app.get("/articles/:id", function(req, res) {
-    db.Article.findOne({ _id : req.params.id })
-    .populate("note")
-    .then (function(dbArticle) {
-        res.json(dbArticle)
-    }).catch (function(err){
-        res.send(err);
-    })
+app.get("/notes", function (req, res) {
+    console.log(res.body)
+    db.Note.find({}).then(function (dbNote) {
+        res.json(dbNote)
+    }).catch(function (err) {
+        res.json(err)
+    });
 });
 
-app.post("/articles/:id", function(req, res) {
+app.get("/articles/:id", function (req, res) {
+    db.Article.findOne({ _id: req.params.id })
+        .populate("notes")
+        .then(function (dbArticle) {
+            res.send(dbArticle)
+        }).catch(function (err) {
+            res.send(err);
+        })
+});
+
+app.post("/articles/:id", function (req, res) {
     db.Note.create(req.body)
-    .then(function(dbNote) {
-        return db.Article.findOneAndUpdate({_id : req.params.id}, { note : dbNote._id }, { new: true})
-    }).then(function(dbArticle) {
-        res.send(dbArticle)
-    }).catch(function(err){
-        res.send(err);
+        .then(function (dbNote) {
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { notes: dbNote._id } }, { new: true });
+        }).then(function (dbArticle) {
+            res.json(dbArticle)
+        }).catch(function (err) {
+            res.send(err);
+        });
+});
+
+app.post("/notes/:id", function(req, res) {
+    // Create a new note and pass the req.body to the entry
+    db.Note.create(req.body)
+      .then(function(dbNote) {
+        return db.Note.findOneAndUpdate({ _id: req.params.id }, { title: req.body.title, body: req.body.body}, { new: true });
+      })
+      .then(function(dbArticle) {
+        // If we were able to successfully update an Article, send it back to the client
+        res.json(dbArticle);
+      })
+      .catch(function(err) {
+        // If an error occurred, send it to the client
+        res.json(err);
+      });
+  });
+
+app.delete("/notes/:id", function (req, res) {
+    db.Note.findByIdAndRemove(req.params.id, (err, note) => {
+        if (err) return err;
+        console.log("Successfully deleted");
+        res.status(200).send("Successful");
     });
 });
 
 //Start server
-app.listen(PORT, function(){
-    console.log ("Your App is running on PORT: "+ PORT)
+app.listen(PORT, function () {
+    console.log("Your App is running on PORT: " + PORT)
 });
-
-
-

@@ -6,7 +6,11 @@ let Schema = mongoose.Schema;
 //create an object
 let NoteSchema = new Schema({
     title: String,
-    body: String
+    body: String, 
+    likes: {
+        type: Schema.Types.ObjectId, 
+        ref: "Like"
+    }
 });
 
 //creates model from schema

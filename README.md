@@ -27,6 +27,6 @@ A news article section specifically pulling news articles from the Ripley's webs
 
  ## Steps of deployment
 
-All articles are deployed onto heroku for web accessability. Thank you for visiting the github page. To see the final project please visit: https://dashboard.heroku.com/apps/protected-depths-32821. 
+All articles are deployed onto heroku for web accessability. Thank you for visiting the github page. To see the final project please visit: https://www.heroku.com/protected-depths-32821. 
 
 

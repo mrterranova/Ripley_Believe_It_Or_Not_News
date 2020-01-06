@@ -39,16 +39,20 @@ mongoose.set('useFindAndModify', false);
 //Route for scraping
 app.get("/scrape", function (req, res) {
 
+    //scrape from ripleys.com
     axios.get("https://www.ripleys.com/weird-news/").then(function (response) {
         var $ = cheerio.load(response.data)
         var results = [];
 
+        //find the following and post
         $(".post-box-inner").each(function (i, element) {
             var title = $(element).children("h3.title").text();
             var summary = $(element).children(".post-excerpt").children("p").text();
             var link = $(element).children("h3.title").children().attr("href");
+            //determine if article has all parameters
             if (title == "" || summary == "" || link == "") { }
             else {
+                //push if all data is present for the article
                 results.push({
                     title: title,
                     summary: summary,
@@ -56,7 +60,7 @@ app.get("/scrape", function (req, res) {
                 });
             }
         });
-        console.log(results)
+        //post all articles on mongodb
         db.Article.create(results)
             .then(function (dbArticle) {
                 res.send(dbArticle)
@@ -64,10 +68,12 @@ app.get("/scrape", function (req, res) {
                 console.log(err)
             });
     });
+    //send message once finished
     res.send("Scrape Completed");
 });
 
-app.get("/articles", function (req, res) {
+//return artilces to home page
+app.get("/", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.render("index", { article: dbArticle });
@@ -76,6 +82,7 @@ app.get("/articles", function (req, res) {
         })
 });
 
+//read all notes in json format
 app.get("/notes", function (req, res) {
     console.log(res.body)
     db.Note.find({}).then(function (dbNote) {
@@ -84,8 +91,8 @@ app.get("/notes", function (req, res) {
         res.json(err)
     });
 });
-
-app.get("/articles/:id", function (req, res) {
+//read all notes by id
+app.get("/:id", function (req, res) {
     db.Article.findOne({ _id: req.params.id })
         .populate("notes")
         .then(function (dbArticle) {
@@ -94,10 +101,11 @@ app.get("/articles/:id", function (req, res) {
             res.send(err);
         })
 });
-
-app.post("/articles/:id", function (req, res) {
+//post a new note through article id
+app.post("/:id", function (req, res) {
     db.Note.create(req.body)
         .then(function (dbNote) {
+            //return article that was updated in notes section
             return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { notes: dbNote._id } }, { new: true });
         }).then(function (dbArticle) {
             res.json(dbArticle)
@@ -106,6 +114,7 @@ app.post("/articles/:id", function (req, res) {
         });
 });
 
+//edit notes by note id
 app.post("/notes/:id", function(req, res) {
     // Create a new note and pass the req.body to the entry
     db.Note.create(req.body)
@@ -122,9 +131,11 @@ app.post("/notes/:id", function(req, res) {
       });
   });
 
+//delete note by id
 app.delete("/notes/:id", function (req, res) {
     db.Note.findByIdAndRemove(req.params.id, (err, note) => {
         if (err) return err;
+        //return successful message if was successful
         console.log("Successfully deleted");
         res.status(200).send("Successful");
     });

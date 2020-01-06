@@ -8,7 +8,7 @@ Scrapping News from...
 
 Welcome to Ripley's Believe It or Not News. Here you can look up weird articles about science, history, and many other subjects. Ripley's is now over a century old and located across the US. They have all sorts of strange articles that don't usually make the mainstream news. It was because of this and the oddity of organization that I choose this particular website to scrape articles from. After all, who doesn't like a good mystery to ponder over? 
 
-Visit my site at : https://www.heroku.com/protected-depths-32821. 
+Visit my site at : https://immense-falls-58710.herokuapp.com/ . 
 
 ## Technology Used
 - Database : Mongoose
@@ -27,6 +27,6 @@ A news article section specifically pulling news articles from the Ripley's webs
 
  ## Steps of deployment
 
-All articles are deployed onto heroku for web accessability. Thank you for visiting the github page. To see the final project please visit: https://www.heroku.com/protected-depths-32821. 
+All articles are deployed onto heroku for web accessability. Thank you for visiting the github page. To see the final project please visit: https://immense-falls-58710.herokuapp.com/ . 
 
 

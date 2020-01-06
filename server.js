@@ -31,7 +31,9 @@ app.engine("handlebars", exphbs({
 
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/weirdnews", { useNewUrlParser: true, useUnifiedTopology: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/weirdnews";
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useFindAndModify', false);
 
 //Route for scraping

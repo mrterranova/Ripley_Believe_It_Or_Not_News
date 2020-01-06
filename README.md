@@ -2,7 +2,7 @@
 
 Scrapping News from...
 
-![Alt text](public/images/th.jpg)
+![Alt text]("public/images/th.jpg")
 
 ## Summary
 

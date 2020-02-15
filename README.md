@@ -25,7 +25,7 @@ A news article section specifically pulling news articles from the Ripley's webs
 
  Handlebars are used for the front-end to import the articles. There were also many ajax calls, a traditional way of importing the articles and the notes onto the page. When Notes are posted, the notes section will disappear and send users back the the main page once more. 
 
- ## Steps of deployment
+ ## Deploying Project
  To run locally:
  - Fork this file, clone it to a local repo. 
  - You will need to npm install all the packages as there will be no node_modules to the folders. 

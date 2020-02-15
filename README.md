@@ -26,7 +26,16 @@ A news article section specifically pulling news articles from the Ripley's webs
  Handlebars are used for the front-end to import the articles. There were also many ajax calls, a traditional way of importing the articles and the notes onto the page. When Notes are posted, the notes section will disappear and send users back the the main page once more. 
 
  ## Steps of deployment
+ To run locally:
+ - Fork this file, clone it to a local repo. 
+ - You will need to npm install all the packages as there will be no node_modules to the folders. 
+ - Next type npm start which will run the file on a local port. 
+ - When the page launches, it will not show anything because you still need to go the extra step and scrape. 
+ - To scrape, add to the URL (after the localhost:PORT):  /scrape
+ - Then watch a new batch of Ripley articles populate. Now you can click and make posts, edit posts, and see the full article on the Ripley Believe It or Not's website.
+ 
+ There are no special commands or steps needed for deploying on a website. Just be certain that after deployment of the website to add the /scrape for the articles to appear.
 
-All articles are deployed onto heroku for web accessability. Thank you for visiting the github page. To see the final project please visit: https://immense-falls-58710.herokuapp.com/ . 
+All articles are deployed onto heroku for web accessability. Thank you for visiting the github page. To see the final project please visit: https://immense-falls-58710.herokuapp.com/ .
 
 
